@@ -44,11 +44,17 @@ int main() {
     char input[cmd_max_len];        // The input
     char *argv[max_num_arg];        // The arguments
 
+    
+
     int pid, status;
 
     welcome_prompt();
 
     while (1) {
+
+        for(int i = 0; i < max_num_arg; i++)        {
+        argv[i] = '\0';
+        }
 
         // Get input
         type_prompt(input);
@@ -147,8 +153,27 @@ void printTok(char **argv, int arrLen) {
  * calls the appropriate built-in function or calls the appropriate program.
  */
 void interpret_command(char **argv) {
-
+    printf("In interpret_command() function.\n");
+    char* first_token = argv[0];
+    printf("%s", first_token);
 	// This is where you will write code to call the appropriate function or program.
+    if (strcmp(first_token, "exit") == 0){
+        printf("First token: %s", first_token);
+    }
+    else if (strcmp(first_token, "cd") == 0){
+     printf("First token: %s", first_token);
+    }
+    else if (strcmp(first_token, "ls") == 0){
+    printf("First token: %s", first_token);
+    }
+    else if (strcmp(first_token, "pwd") == 0){
+    printf("First token: %s", first_token);
+    }
+    else{
+        printf("Not a builtin");
+    //  create child process with fork
+    //  execute program located in usr/bin
+    }
 
 }
 
