@@ -172,9 +172,13 @@ void interpret_command(char **argv) {
     else{
         printf("Not a builtin");
     //  create child process with fork
-    //  execute program located in usr/bin
+    if(fork() == 0){
+        int n = execvp (first_token, argv);
+        if(n == -1){
+            printf("Command failed to execute.\n");
+        }
     }
-
+    }
 }
 
 
