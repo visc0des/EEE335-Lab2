@@ -1,3 +1,26 @@
+/*
+    Authors: NCdt Eric Cho and OCdt Liethan Velasco
+
+    Description: 
+
+        This file contains the code pertaining to Lab 2 of the course EEE335.
+        This code is to create a very rudimentary version of a Linux shell. 
+
+    Version: January 30th 2023
+
+    Status:
+        - Implementing parser for input. 
+
+
+    NOTES:
+        - TEMPORARY: modified parse() to return the token count parsed from input. 
+        - added printArgs() function to print parsed input.
+
+*/
+
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +33,8 @@ const unsigned int max_num_arg = 64;
 
 
 void welcome_prompt();
-void parse(char *input, char **argv);
+int parse(char *input, char **argv);
+void printTok(char **argv, int arrLen);
 void type_prompt(char *input);
 void interpret_command(char **argv);
 
@@ -25,9 +49,17 @@ int main() {
     welcome_prompt();
 
     while (1) {
+
+        // Get input
         type_prompt(input);
-        parse(input, argv);
+
+        // Parse the tokens. For now, print parsed tokens
+        int arrLen = parse(input, argv);
+        printTok(argv, arrLen);
+
+        // Interpret command. 
         interpret_command(argv);
+
     }
 
     return 0;
@@ -39,7 +71,7 @@ int main() {
  */
 void type_prompt(char *input) {
 
-    printf("EEE335$ ");
+    printf("\nEEE335:~$ ");
 
     if (input != NULL) {
         int c = EOF;
@@ -56,12 +88,57 @@ void type_prompt(char *input) {
 
 
 /*
- * This function parses the user inputs.
+    This function parses the user inputs.   
+ 
+    RETURNS number of arguments parsed. TODO - REMOVE RETURN 
  */
-void parse(char *input, char **argv) {
+int parse(char *input, char **argv) {
 
-    // This is where the code for parsing the user's input is.
+    // Defining separator
+    char sep[2] = " ";
 
+    // Put first token of input into argv array
+    char* token = strtok(input, sep);
+    argv[0] = token;
+
+    // Creating counter to return parsed token count
+    int tokCount = 1;
+
+    // Parse the remaining input string, keeping in max_num_arg range...
+    for (int i = 1; i < max_num_arg; i++) {
+
+        // Retrieve the next token. If null (IOW no tokens left), stop loop.
+        token = strtok(NULL, sep);
+        if (token == NULL) { break; }
+
+        // Otherwise, store collected token and increment argCount
+        argv[i] = token;
+        tokCount++;
+
+        // Debug statement
+        printf("\n Adding token <%s> to index %d. Token count = %d", token, i, tokCount);
+        
+    }
+
+    return tokCount;
+
+}
+
+/* 
+
+Prints all parsed tokens. 
+
+char **argv : The string array which contains parsed tokens.
+int arrLen: The length of argv. 
+
+*/
+void printTok(char **argv, int arrLen) {
+
+    printf("\n\nIn printArgs() function. \n");
+
+    for (int i = 0; i < arrLen; i++) {
+        printf("\nToken %d: %s", i, argv[i]);
+    }
 }
 
 
