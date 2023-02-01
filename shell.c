@@ -151,28 +151,39 @@ void printTok(char **argv, int arrLen) {
 /*
  * This function interprets the parsed command that is entered by the user and
  * calls the appropriate built-in function or calls the appropriate program.
+ * 
+ * We are required to write our own versions of "exit", "cd", "ls", and "pwd" using
+ * the appropriate system calls. 
+ * 
  */
 void interpret_command(char **argv) {
+
     printf("In interpret_command() function.\n");
     char* first_token = argv[0];
     printf("%s", first_token);
-	// This is where you will write code to call the appropriate function or program.
+
+	// Checking if command called must be of our own version. 
+    // Calling needed calls as needed. 
     if (strcmp(first_token, "exit") == 0){
         printf("First token: %s", first_token);
     }
     else if (strcmp(first_token, "cd") == 0){
-     printf("First token: %s", first_token);
+        printf("First token: %s", first_token);
     }
     else if (strcmp(first_token, "ls") == 0){
-    printf("First token: %s", first_token);
+        printf("First token: %s", first_token);
     }
     else if (strcmp(first_token, "pwd") == 0){
-    printf("First token: %s", first_token);
+        printf("First token: %s", first_token);
     }
+
+    // If not a system call, use fork() and execvp()
     else{
+
         printf("Not a builtin");
-    //  create child process with fork
-    //  execute program located in usr/bin
+        //  create child process with fork
+        //  execute program located in usr/bin
+
     }
 
 }
