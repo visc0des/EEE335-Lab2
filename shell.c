@@ -9,7 +9,7 @@
     Version: January 30th 2023
 
     Status:
-        - Implementing parser for input. 
+        - Implementing cd. 
 
 
     NOTES:
@@ -156,6 +156,9 @@ void printTok(char **argv, int arrLen) {
  * calls the appropriate built-in function or calls the appropriate program.
  */
 void interpret_command(char **argv) {
+
+    // TODO - handle the bad input for each command
+
     printf("In interpret_command() function.\n");
     char* first_token = argv[0];
     printf("%s", first_token);
@@ -165,10 +168,43 @@ void interpret_command(char **argv) {
     }
     else if (strcmp(first_token, "cd") == 0){
 
+        // Can't allow if more than one arg
+
         printf("First token: %s", first_token);
 
-        // Begin working here. 
-        
+        char* cwd;
+
+        // Print directory before change
+        cwd = getcwd(NULL, 0);
+        if (cwd != NULL) {
+            printf("\n\nWorking directory before change> %s", cwd);
+        }
+        else {
+            fprintf(stderr, "\n\nERROR: could not find before change working directory.");
+        }
+        free (cwd);
+
+        // Change the directory
+        int result = chdir(argv[1]);
+        if (result == 0) {
+            printf("\n\nWorking directory successfully changed.");
+        }
+        else {
+            fprintf(stderr, "\n\nERROR: could not switch working directories.");
+        }
+
+
+        // print directory after change
+        cwd = getcwd(NULL, 0);
+        if (cwd != NULL) {
+            printf("\n\nWorking directory after change> %s", cwd);
+        }
+        else {
+            fprintf(stderr, "\n\nERROR: could not find after change working directory.");
+        }
+        free (cwd);
+
+
     }
     else if (strcmp(first_token, "ls") == 0){
     printf("First token: %s", first_token);
@@ -186,6 +222,7 @@ void interpret_command(char **argv) {
         else {
             fprintf(stderr, "\n\nERROR: could not find current working directory.");
         }
+        free (cwd);
 
     }
     else{
