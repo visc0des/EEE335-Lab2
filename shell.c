@@ -83,7 +83,10 @@ int main() {
  */
 void type_prompt(char *input) {
 
-    printf("\nEEE335:~$ ");
+    // Get current working directory to include in prompt (absolute for now) TRUNCATE?
+    char* abs_cwd = getcwd(NULL, 0);
+    printf("\nEEE335 > %s:~$ ", abs_cwd);
+    free(abs_cwd);
 
     if (input != NULL) {
         int c = EOF;
@@ -171,21 +174,13 @@ void interpret_command(char **argv) {
     }
     else if (strcmp(first_token, "cd") == 0){
 
-        // Can't allow if more than one arg
+        // Can't allow if more than one arg passed
+        if (argv[2] != NULL) {
+            fprintf(stderr, "ERROR: cd command only allowed one argument.");
+            return;
+        }
 
         printf("First token: %s", first_token);
-
-        char* cwd;
-
-        // Print directory before change
-        cwd = getcwd(NULL, 0);
-        if (cwd != NULL) {
-            printf("\n\nWorking directory before change> %s", cwd);
-        }
-        else {
-            fprintf(stderr, "\n\nERROR: could not find before change working directory.");
-        }
-        free (cwd);
 
         // Change the directory
         int result = chdir(argv[1]);
@@ -195,10 +190,6 @@ void interpret_command(char **argv) {
         else {
             fprintf(stderr, "\n\nERROR: could not switch working directories.");
         }
-
-
-        // print directory after change
-        printPWD();
 
 
     }
