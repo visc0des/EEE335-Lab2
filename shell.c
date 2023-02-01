@@ -67,7 +67,7 @@ int main() {
 
         // Parse the tokens. For now, print parsed tokens
         int arrLen = parse(input, argv);
-        printTok(argv, arrLen);
+        // printTok(argv, arrLen);
 
         // Interpret command. 
         interpret_command(argv);
@@ -85,7 +85,7 @@ void type_prompt(char *input) {
 
     // Get current working directory to include in prompt (absolute for now) TRUNCATE?
     char* abs_cwd = getcwd(NULL, 0);
-    printf("\nEEE335 > %s:~$ ", abs_cwd);
+    printf("\n\nEEE335 > %s:~$ ", abs_cwd);
     free(abs_cwd);
 
     if (input != NULL) {
@@ -130,8 +130,6 @@ int parse(char *input, char **argv) {
         argv[i] = token;
         tokCount++;
 
-        // Debug statement
-        printf("\n Adding token <%s> to index %d. Token count = %d", token, i, tokCount);
         
     }
 
@@ -149,8 +147,6 @@ int arrLen: The length of argv.
 */
 void printTok(char **argv, int arrLen) {
 
-    printf("\n\nIn printArgs() function. \n");
-
     for (int i = 0; i < arrLen; i++) {
         printf("\nToken %d: %s", i, argv[i]);
     }
@@ -165,9 +161,8 @@ void interpret_command(char **argv) {
 
     // TODO - handle the bad input for each command
 
-    printf("In interpret_command() function.\n");
     char* first_token = argv[0];
-    printf("%s", first_token);
+
 	// This is where you will write code to call the appropriate function or program.
     if (strcmp(first_token, "exit") == 0){
         printf("First token: %s", first_token);
@@ -180,7 +175,6 @@ void interpret_command(char **argv) {
             return;
         }
 
-        printf("First token: %s", first_token);
 
         // Change the directory
         int result = chdir(argv[1]);
@@ -188,7 +182,7 @@ void interpret_command(char **argv) {
             printf("\n\nWorking directory successfully changed.");
         }
         else {
-            fprintf(stderr, "\n\nERROR: could not switch working directories.");
+            fprintf(stderr, "\n\nERROR: Inputted directory not recognized.. ");
         }
 
 
@@ -198,7 +192,6 @@ void interpret_command(char **argv) {
     }
     else if (strcmp(first_token, "pwd") == 0){
 
-        printf("First token: %s", first_token);
        
         // Print current working directory
         printPWD();
@@ -244,7 +237,7 @@ void printPWD() {
     char* cwd;
     cwd= getcwd(NULL, 0);
     if (cwd != NULL) {
-        printf("\n\nCurrent working directory> %s", cwd);
+        printf("\nCurrent working directory: %s", cwd);
     }
     else {
         fprintf(stderr, "\n\nERROR: could not find current working directory.");
