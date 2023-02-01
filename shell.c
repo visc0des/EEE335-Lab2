@@ -9,7 +9,7 @@
     Version: January 30th 2023
 
     Status:
-        - Implementing cd. 
+        - Implementing ls. 
 
 
     NOTES:
