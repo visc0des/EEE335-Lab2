@@ -172,18 +172,17 @@ void interpret_command(char **argv) {
     else if (strcmp(first_token, "pwd") == 0){
 
         printf("First token: %s", first_token);
+       
+        // Print current working directory with dynamic memory
+        char* cwd;
+        cwd = getcwd(NULL, 0);
+        if (cwd != NULL) {
+            printf("\n\nCurrent working directory> %s", cwd);
+        }
+        else {
+            fprintf(stderr, "\n\nERROR: could not find current working directory.");
+        }
 
-        // Use getcwd() system to get pwd in a 50 char buffer. Print out result.
-
-        /* Note: According to online sources, getcwd() returns a null pointer if was unsuccessful, and 
-        returns a pointer to the bufferif successful. 
-        
-        Current status: buf_ptr is being set to null, and buffer =  8����*/
-        
-        char buffer[50];
-        char* buf_ptr = getcwd(buffer, 50);
-        
-        printf("\nCurrent working directory: %s", buffer);
 
     }
     else{
