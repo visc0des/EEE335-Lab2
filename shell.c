@@ -182,13 +182,15 @@ void interpret_command(char **argv) {
             printf("\n\nWorking directory successfully changed.");
         }
         else {
-            fprintf(stderr, "\n\nERROR: Inputted directory not recognized.. ");
+            fprintf(stderr, "\n\nERROR: Inputted directory not recognized. ");
         }
 
 
     }
     else if (strcmp(first_token, "ls") == 0){
-    printf("First token: %s", first_token);
+   
+        // Begin writing code here. 
+        
     }
     else if (strcmp(first_token, "pwd") == 0){
 
