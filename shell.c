@@ -41,6 +41,9 @@ void printTok(char **argv, int arrLen);
 void type_prompt(char *input);
 void interpret_command(char **argv);
 
+// --- Functions for system calls ---
+void printPWD();
+
 
 int main() {
 
@@ -195,14 +198,7 @@ void interpret_command(char **argv) {
 
 
         // print directory after change
-        cwd = getcwd(NULL, 0);
-        if (cwd != NULL) {
-            printf("\n\nWorking directory after change> %s", cwd);
-        }
-        else {
-            fprintf(stderr, "\n\nERROR: could not find after change working directory.");
-        }
-        free (cwd);
+        printPWD();
 
 
     }
@@ -213,17 +209,10 @@ void interpret_command(char **argv) {
 
         printf("First token: %s", first_token);
        
-        // Print current working directory with dynamic memory
-        char* cwd;
-        cwd = getcwd(NULL, 0);
-        if (cwd != NULL) {
-            printf("\n\nCurrent working directory> %s", cwd);
-        }
-        else {
-            fprintf(stderr, "\n\nERROR: could not find current working directory.");
-        }
-        free (cwd);
+        // Print current working directory
+        printPWD();
 
+        
     }
     else{
         printf("Not a builtin");
@@ -254,4 +243,21 @@ void welcome_prompt() {
     for (i = 0; i < num_Padding; i++)
         printf("#");
     printf("\n\n");
+}
+
+
+/* Function prints current working directory. 
+    Prints if error occurs.  */
+void printPWD() {
+
+    char* cwd;
+    cwd= getcwd(NULL, 0);
+    if (cwd != NULL) {
+        printf("\n\nCurrent working directory> %s", cwd);
+    }
+    else {
+        fprintf(stderr, "\n\nERROR: could not find current working directory.");
+    }
+    free (cwd);
+
 }
