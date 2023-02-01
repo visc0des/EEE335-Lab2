@@ -27,6 +27,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+// ---- For system calls ----
+#include <unistd.h> // For getcwd()
+
 
 const unsigned int cmd_max_len = 1024;
 const unsigned int max_num_arg = 64;
@@ -174,18 +177,39 @@ void interpret_command(char **argv) {
         printf("First token: %s", first_token);
     }
     else if (strcmp(first_token, "pwd") == 0){
+
         printf("First token: %s", first_token);
+       
+        // Print current working directory with dynamic memory
+        char* cwd;
+        cwd = getcwd(NULL, 0);
+        if (cwd != NULL) {
+            printf("\n\nCurrent working directory> %s", cwd);
+        }
+        else {
+            fprintf(stderr, "\n\nERROR: could not find current working directory.");
+        }
+
+
     }
 
     // If not a system call, use fork() and execvp()
     else{
 
         printf("Not a builtin");
+
+
+    //  create child process with fork
+    if(fork() == 0){
+        int n = execvp (first_token, argv);
+        if(n == -1){
+            printf("Command failed to execute.\n");
+        }
+    }
         //  create child process with fork
         //  execute program located in usr/bin
 
     }
-
 }
 
 
