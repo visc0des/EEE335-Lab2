@@ -61,8 +61,9 @@ int main() {
 
     while (1) {
 
-        for(int i = 0; i < max_num_arg; i++)        {
-        argv[i] = '\0';
+
+        for(int i = 0; i < max_num_arg; i++) {
+            argv[i] = '\0';
         }
 
         // Get input
@@ -168,7 +169,13 @@ void interpret_command(char **argv) {
 
 	// This is where you will write code to call the appropriate function or program.
     if (strcmp(first_token, "exit") == 0){
-        printf("First token: %s", first_token);
+
+        // Call exit() system call
+        printf("\nExiting from the process...\n\n");
+        sleep(2); // Not necessary, but adds a bit of flare.
+        exit(0);
+
+        
     }
     else if (strcmp(first_token, "cd") == 0){
 
