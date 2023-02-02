@@ -9,7 +9,7 @@
     Version: January 30th 2023
 
     Status:
-        - Implementing ls. 
+        - Implementing built-in exit. 
 
 
     NOTES:
