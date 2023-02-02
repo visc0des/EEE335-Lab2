@@ -222,10 +222,46 @@ void interpret_command(char **argv) {
 
         
     }
-    else{
-        printf("Not a builtin");
+    else {
+
+        // Commands for this include: cat, less, etc.
+
+        // Fork the current process, capture result
+        int result = fork();
+        printf("\n\n Just forked... Now waiting... result = %d", result);
+
+        // If we forked from parent, wait for child to finish
+        if (result != 0) {
+
+            printf("\n\n Parent > Waiting on child to finish...");
+
+            // Going into blocked state...
+            int status;
+            waitpid(-1, &status, 0);
+
+            printf("\n\n Parent > Child finished. Back in parent process. ");
+
+        }
+        // If we forked in child, do inputted command
+        else {
+
+            printf("\n\n Child > in the child process. Doing command..."); 
+
+            sleep(1);
+            
+            int n = execvp(first_token, argv);
+
+            // If command did not get recognized, kill the child process
+            if (n == -1) {
+                fprintf(stderr, "\n\nCommand %s failed to execute/not recognized.\n", first_token);
+                exit(-1);
+            }
+        }
+
+        
 
 
+        /*
         //  create child process with fork
         if(fork() == 0){
             int n = execvp (first_token, argv);
@@ -233,6 +269,7 @@ void interpret_command(char **argv) {
                 printf("Command failed to execute.\n");
             }
         }
+        */
     }
 }
 
