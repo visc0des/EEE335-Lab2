@@ -9,7 +9,8 @@
     Version: January 30th 2023
 
     Status:
-        - Implementing built-in exit. 
+        - Implementing the code for fork() and execvp().
+
 
 
     NOTES:
