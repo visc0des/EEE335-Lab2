@@ -28,7 +28,9 @@
 #include <sys/wait.h>
 
 // ---- For system calls ----
-#include <unistd.h> // For getcwd()
+#include <unistd.h> // For getcwd() and chdir() <-- not sure about last one
+#include <dirent.h> // For opendir() 
+
 
 
 const unsigned int cmd_max_len = 1024;
@@ -43,6 +45,7 @@ void interpret_command(char **argv);
 
 // --- Functions for system calls ---
 void printPWD();
+int listFiles();
 
 
 int main() {
@@ -188,13 +191,25 @@ void interpret_command(char **argv) {
 
     }
     else if (strcmp(first_token, "ls") == 0){
+
+        // Check if any args passed. Stop if so
+        if (argv[1] != NULL) {
+            fprintf(stderr, "ERROR: current implementation of ls command does not allow arguments.");
+            return;
+        }
    
-        // Begin writing code here. 
+        // List all files in current working directory here
+        listFiles();
         
     }
     else if (strcmp(first_token, "pwd") == 0){
 
-       
+        // Check if any args passed. Stop if so
+        if (argv[1] != NULL) {
+            fprintf(stderr, "ERROR: pwd command does not take any arguments.");
+            return;
+        }
+
         // Print current working directory
         printPWD();
 
@@ -204,13 +219,13 @@ void interpret_command(char **argv) {
         printf("Not a builtin");
 
 
-    //  create child process with fork
-    if(fork() == 0){
-        int n = execvp (first_token, argv);
-        if(n == -1){
-            printf("Command failed to execute.\n");
+        //  create child process with fork
+        if(fork() == 0){
+            int n = execvp (first_token, argv);
+            if(n == -1){
+                printf("Command failed to execute.\n");
+            }
         }
-    }
     }
 }
 
@@ -245,5 +260,43 @@ void printPWD() {
         fprintf(stderr, "\n\nERROR: could not find current working directory.");
     }
     free (cwd);
+
+}
+
+/* Function lists all of the non-hidden files/directories in the current working directory.
+
+Utilize directory entities. Returns 0 if successful, -1 if unsuccessful. */
+int listFiles() {
+
+    // First, open current directory and capture with pointer, and check if successful
+    DIR* curr_dir = opendir(".");
+    if (curr_dir == NULL) {
+        fprintf(stderr, "\n\nERROR: Failed to open current directory.");
+        return -1;
+    }
+
+    // Create a struct pointer to iterate through all files/dir in curr_dir. Initialize 
+    // to point to first entity 
+    struct dirent* this_ent;
+    this_ent = readdir(curr_dir);
+
+    // Iterate through all entities, print their names, until this_ent is NULL
+    printf("\nContents of current working directory:\n");
+    while (this_ent != NULL) {
+
+        // Only print if ent name does not start with '.'
+        char* ent_name = this_ent -> d_name;
+        if (*ent_name != '.') {
+            printf("\n%s", this_ent -> d_name);
+        }
+
+        // Get next entity
+        this_ent = readdir(curr_dir);
+
+    }
+
+    // Finish by closing directory pointer
+    closedir(curr_dir);
+    return 0;
 
 }
