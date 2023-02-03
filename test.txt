@@ -1,0 +1,7 @@
+
+	This is just a test text file used to test the execvp() functionality
+	within the shell of Lab 2 of the course EEE335. 
+
+	Authors: NCdt Cho and OCdt Velasco
+
+	

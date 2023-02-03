@@ -14,8 +14,15 @@
 
 
     NOTES:
+       
         - TEMPORARY: modified parse() to return the token count parsed from input. 
+       
         - added printArgs() function to print parsed input.
+       
+        - Unfortunately, can't make the assumption of which directory serves as the home directory. 
+        Don't have the tools to do that just yet. We'll have to stick to simply using the entire absolute 
+        directory when switching directories and all. 
+
 
 */
 
@@ -43,6 +50,7 @@ int parse(char *input, char **argv);
 void printTok(char **argv, int arrLen);
 void type_prompt(char *input);
 void interpret_command(char **argv);
+void fillNull(char **argv);
 
 // --- Functions for system calls ---
 void printPWD();
@@ -62,17 +70,14 @@ int main() {
 
     while (1) {
 
-
-        for(int i = 0; i < max_num_arg; i++) {
-            argv[i] = '\0';
-        }
+        // First thing every loop, fill up argv with null chars
+        fillNull(argv);
 
         // Get input
         type_prompt(input);
 
         // Parse the tokens. For now, print parsed tokens
         int arrLen = parse(input, argv);
-        // printTok(argv, arrLen);
 
         // Interpret command. 
         interpret_command(argv);
@@ -108,9 +113,11 @@ void type_prompt(char *input) {
 
 
 /*
-    This function parses the user inputs.   
+    Description:
+    
+        This function parses the user inputs.   
  
-    RETURNS number of arguments parsed. TODO - REMOVE RETURN 
+    Returns: number of arguments parsed <-- this was added for debugging purposes. 
  */
 int parse(char *input, char **argv) {
 
@@ -142,34 +149,35 @@ int parse(char *input, char **argv) {
 
 }
 
-/* 
-
-Prints all parsed tokens. 
-
-char **argv : The string array which contains parsed tokens.
-int arrLen: The length of argv. 
-
-*/
-void printTok(char **argv, int arrLen) {
-
-    for (int i = 0; i < arrLen; i++) {
-        printf("\nToken %d: %s", i, argv[i]);
-    }
-}
 
 
-/*
- * This function interprets the parsed command that is entered by the user and
- * calls the appropriate built-in function or calls the appropriate program.
+/*  
+ *  Description: 
+ *
+ *      This function interprets the parsed command that is entered by the user and
+ *      calls the appropriate built-in function or calls the appropriate program.
+ * 
+ *      Commands exit, ls, pwd, and cd have been implemented with system calls. 
+ *      All remaining valid commands utilize execvp(). 
+ * 
+ *  Arguments: 
+ *      char** argv: an array of strings. First element contains the parsed command token, any other
+ *          following tokens are the command's arguments.  
  */
 void interpret_command(char **argv) {
 
     // TODO - handle the bad input for each command
-
+    // Retrieve the command token from argv
     char* first_token = argv[0];
 
-	// This is where you will write code to call the appropriate function or program.
-    if (strcmp(first_token, "exit") == 0){
+	// Command token determines which system call/built-in command to execute. 
+    if (strcmp(first_token, "exit") == 0) {
+
+        // Handle bad input, 
+        if (argv[1] != NULL) {
+            fprintf(stderr, "\n\nERROR: exit command not allowed arguments.");
+            return;
+        }
 
         // Call exit() system call
         printf("\nExiting from the process...\n\n");
@@ -180,14 +188,14 @@ void interpret_command(char **argv) {
     }
     else if (strcmp(first_token, "cd") == 0){
 
-        // Can't allow if more than one arg passed
+        // Handle bad input
         if (argv[2] != NULL) {
-            fprintf(stderr, "ERROR: cd command only allowed one argument.");
+            fprintf(stderr, "\n\nERROR: cd command only allowed one argument.");
             return;
         }
 
 
-        // Change the directory
+        // Change the directory with chdir();
         int result = chdir(argv[1]);
         if (result == 0) {
             printf("\n\nWorking directory successfully changed.");
@@ -200,40 +208,55 @@ void interpret_command(char **argv) {
     }
     else if (strcmp(first_token, "ls") == 0){
 
-        // Check if any args passed. Stop if so
+        // Handle bad input
         if (argv[1] != NULL) {
-            fprintf(stderr, "ERROR: current implementation of ls command does not allow arguments.");
+            fprintf(stderr, "\n\nERROR: ls command not allowed arguments (this implementation of it). ");
             return;
         }
    
-        // List all files in current working directory here
+        // List all files in current working directory 
         listFiles();
         
     }
-    else if (strcmp(first_token, "pwd") == 0){
+    else if (strcmp(first_token, "pwd") == 0) {
 
-        // Check if any args passed. Stop if so
+        // Handle bad input
         if (argv[1] != NULL) {
-            fprintf(stderr, "ERROR: pwd command does not take any arguments.");
+            fprintf(stderr, "\n\nERROR: pwd command not allowed arguments. ");
             return;
         }
 
         // Print current working directory
         printPWD();
 
-        
     }
-    else{
-        printf("Not a builtin");
+    else {
 
 
-        //  create child process with fork
-        if(fork() == 0){
-            int n = execvp (first_token, argv);
-            if(n == -1){
-                printf("Command failed to execute.\n");
-            }
+        // Fork the current process and make a child, capture result
+        int result = fork();
+
+        // Make parent process wait for its child to finish
+        if (result != 0) {
+
+            // Going into blocked state...
+            int status;
+            waitpid(-1, &status, 0);
+
         }
+        // Make child run the typed in command. 
+        else {
+            
+            int n = execvp(first_token, argv);
+
+            // If inputted command not recognized, kill this child process
+            if (n == -1) {
+                fprintf(stderr, "\n\nERROR: Command <%s> failed to execute. It or its attributes not recognized.\n", first_token);
+                exit(-1);
+            }
+
+        }
+
     }
 }
 
@@ -255,28 +278,40 @@ void welcome_prompt() {
 }
 
 
-/* Function prints current working directory. 
-    Prints if error occurs.  */
+/*  
+    Description:
+
+        Functions prints the absolute path of current working directory to console. 
+        Prints out to console if an error had occurred. 
+
+ */
 void printPWD() {
 
+    // dynamic memoorrryyy...
     char* cwd;
-    cwd= getcwd(NULL, 0);
+    cwd = getcwd(NULL, 0);
     if (cwd != NULL) {
         printf("\nCurrent working directory: %s", cwd);
     }
     else {
-        fprintf(stderr, "\n\nERROR: could not find current working directory.");
+        fprintf(stderr, "\n\nERROR: Could not open current working directory.");
     }
     free (cwd);
 
 }
 
-/* Function lists all of the non-hidden files/directories in the current working directory.
 
-Utilize directory entities. Returns 0 if successful, -1 if unsuccessful. */
+/*  Description:
+
+        Function lists all non-hidden files/directories in current working directory.
+        Utilizes directory entities and directory-related system calls. 
+
+    Returns: 0 if successful. -1 if unsuccessful. 
+
+ */
 int listFiles() {
 
-    // First, open current directory and capture with pointer, and check if successful
+    // First, open current directory and capture with pointer. Check if successful
     DIR* curr_dir = opendir(".");
     if (curr_dir == NULL) {
         fprintf(stderr, "\n\nERROR: Failed to open current directory.");
@@ -295,7 +330,12 @@ int listFiles() {
         // Only print if ent name does not start with '.'
         char* ent_name = this_ent -> d_name;
         if (*ent_name != '.') {
-            printf("\n%s", this_ent -> d_name);
+
+            // A little extra stuff...
+            char* dir_suffix;
+            if (this_ent -> d_type == DT_DIR) { dir_suffix = " - directory"; } else { dir_suffix = ""; }
+
+            printf("\n%s%s", this_ent -> d_name, dir_suffix);
         }
 
         // Get next entity
@@ -307,4 +347,37 @@ int listFiles() {
     closedir(curr_dir);
     return 0;
 
+}
+
+
+/* 
+    Description:
+
+        Prints all parsed tokens. 
+    
+    Arguments: 
+        char **argv : The string array which contains parsed tokens.
+        int arrLen: The length of argv. 
+
+*/
+void printTok(char **argv, int arrLen) {
+
+    for (int i = 0; i < arrLen; i++) {
+        printf("\nToken %d: %s", i, argv[i]);
+    }
+}
+
+
+/* Description:
+
+        Function fills up the inputted array with null characters. 
+
+    Arguments:
+        char** inArr: the array of characters (of size max_num_arg) to be filled up with null characters. 
+
+*/
+void fillNull(char** inArr) {
+    for(int i = 0; i < max_num_arg; i++) {
+            inArr[i] = '\0';
+        }
 }
