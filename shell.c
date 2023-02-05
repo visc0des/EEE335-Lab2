@@ -19,7 +19,7 @@
        
         - added printArgs() function to print parsed input.
        
-        - Unfortunately, can't make the assumption of which directory serves as the home directory. 
+        - Unfortunately, can't make the assumption of which directory serves as the home directory (with ~). 
         Don't have the tools to do that just yet. We'll have to stick to simply using the entire absolute 
         directory when switching directories and all. 
 
@@ -36,7 +36,7 @@
 #include <sys/wait.h>
 
 // ---- For system calls ----
-#include <unistd.h> // For getcwd() and chdir() <-- not sure about last one
+#include <unistd.h> // For getcwd() and chdir()
 #include <dirent.h> // For opendir() 
 
 
