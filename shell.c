@@ -93,9 +93,11 @@ int main() {
  */
 void type_prompt(char *input) {
 
+    sleep(1);
+
     // Get current working directory to include in prompt (absolute for now) TRUNCATE?
     char* abs_cwd = getcwd(NULL, 0);
-    printf("\n\nEEE335 > %s:~$ ", abs_cwd);
+    printf("\n\n\nEEE335 > %s:~$ ", abs_cwd);
     free(abs_cwd);
 
     if (input != NULL) {
@@ -175,7 +177,7 @@ void interpret_command(char **argv) {
 
         // Handle bad input, 
         if (argv[1] != NULL) {
-            fprintf(stderr, "\n\nERROR: exit command not allowed arguments.");
+            fprintf(stderr, "\nERROR: exit command not allowed arguments.");
             return;
         }
 
@@ -189,8 +191,12 @@ void interpret_command(char **argv) {
     else if (strcmp(first_token, "cd") == 0){
 
         // Handle bad input
-        if (argv[2] != NULL) {
-            fprintf(stderr, "\n\nERROR: cd command only allowed one argument.");
+        if (argv[1] == NULL) {
+            fprintf(stderr, "\nERROR: cd command requires one argument.");
+            return;
+        }
+        else if (argv[2] != NULL) {
+            fprintf(stderr, "\nERROR: cd command only allowed one argument.");
             return;
         }
 
@@ -201,7 +207,7 @@ void interpret_command(char **argv) {
             printf("\n\nWorking directory successfully changed.");
         }
         else {
-            fprintf(stderr, "\n\nERROR: Inputted directory not recognized. ");
+            fprintf(stderr, "\nERROR: Inputted directory not recognized. ");
         }
 
 
@@ -210,7 +216,7 @@ void interpret_command(char **argv) {
 
         // Handle bad input
         if (argv[1] != NULL) {
-            fprintf(stderr, "\n\nERROR: ls command not allowed arguments (this implementation of it). ");
+            fprintf(stderr, "\nERROR: ls command not allowed arguments (this implementation of it). ");
             return;
         }
    
@@ -222,7 +228,7 @@ void interpret_command(char **argv) {
 
         // Handle bad input
         if (argv[1] != NULL) {
-            fprintf(stderr, "\n\nERROR: pwd command not allowed arguments. ");
+            fprintf(stderr, "\nERROR: pwd command not allowed arguments. ");
             return;
         }
 
@@ -251,7 +257,7 @@ void interpret_command(char **argv) {
 
             // If inputted command not recognized, kill this child process
             if (n == -1) {
-                fprintf(stderr, "\n\nERROR: Command <%s> failed to execute. It or its attributes not recognized.\n", first_token);
+                fprintf(stderr, "\n\nERROR: Command <%s> failed to execute. It or its options not recognized.\n", first_token);
                 exit(-1);
             }
 
