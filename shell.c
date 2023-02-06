@@ -93,8 +93,6 @@ int main() {
  */
 void type_prompt(char *input) {
 
-    sleep(1);
-
     // Get current working directory to include in prompt (absolute for now) TRUNCATE?
     char* abs_cwd = getcwd(NULL, 0);
     printf("\n\n\nEEE335 > %s:~$ ", abs_cwd);
